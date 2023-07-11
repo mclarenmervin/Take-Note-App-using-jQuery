@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Note Taking Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f2f2f2;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .note-form {
+            margin-bottom: 20px;
+        }
+
+        .note-form input[type="text"],
+        .note-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .note-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .note-item {
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .note-item .actions {
+            display: flex;
+        }
+
+        .note-item .actions button {
+            margin-left: 5px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Note Taking Application</h1>
+        <div class="note-form">
+            <input type="text" id="titleInput" placeholder="Note Title">
+            <textarea id="contentInput" placeholder="Note Content"></textarea>
+            <button id="addButton">Add Note</button>
+        </div>
+        <ul id="noteList" class="note-list"></ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var noteList = $('#noteList');
+
+            $('#addButton').on('click', function() {
+                var title = $('#titleInput').val().trim();
+                var content = $('#contentInput').val().trim();
+
+                if (title !== '' && content !== '') {
+                    addNoteToList(title, content);
+                    clearFormInputs();
+                }
+            });
+
+            noteList.on('click', '.edit-button', function() {
+                var noteItem = $(this).closest('.note-item');
+                var title = noteItem.find('.note-title').text();
+                var content = noteItem.find('.note-content').text();
+
+                noteItem.find('.note-title').replaceWith('<input type="text" class="note-title-input" value="' + title + '">');
+                noteItem.find('.note-content').replaceWith('<textarea class="note-content-input">' + content + '</textarea>');
+
+                $(this).text('Save').removeClass('edit-button').addClass('save-button');
+            });
+
+            noteList.on('click', '.save-button', function() {
+                var noteItem = $(this).closest('.note-item');
+                var newTitle = noteItem.find('.note-title-input').val().trim();
+                var newContent = noteItem.find('.note-content-input').val().trim();
+
+                if (newTitle !== '' && newContent !== '') {
+                    noteItem.find('.note-title-input').replaceWith('<span class="note-title">' + newTitle + '</span>');
+                    noteItem.find('.note-content-input').replaceWith('<p class="note-content">' + newContent + '</p>');
+
+                    $(this).text('Edit').removeClass('save-button').addClass('edit-button');
+                }
+            });
+
+            noteList.on('click', '.delete-button', function() {
+                $(this).closest('.note-item').remove();
+            });
+
+            function addNoteToList(title, content) {
+                var noteItem = $('<li class="note-item"></li>');
+                var noteTitle = $('<span class="note-title">' + title + '</span>');
+                var noteContent = $('<p class="note-content">' + content + '</p>');
+                var editButton = $('<button class="edit-button">Edit</button>');
+                var deleteButton = $('<button class="delete-button">Delete</button>');
+
+                noteItem.append(noteTitle, noteContent, '<div class="actions"></div>');
+                noteItem.find('.actions').append(editButton, deleteButton);
+                noteList.append(noteItem);
+            }
+
+            function clearFormInputs() {
+                $('#titleInput').val('');
+                $('#contentInput').val('');
+            }
+        });
+    </script>
+</body>
+</html>
